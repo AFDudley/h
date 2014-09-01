@@ -208,12 +208,16 @@ sockjs:
   output: scripts/vendor/sockjs.min.js
   contents:
     - h:static/scripts/vendor/sockjs-0.3.4.js
+unorm:
+  filters: uglifyjs
+  output: scripts/vendor/unorm.min.js
+  contents:
+    - h:static/scripts/vendor/unorm.js
 uuid:
   filters: uglifyjs
   output: scripts/vendor/uuid.min.js
   contents:
     - h:static/scripts/vendor/uuid.js
-
 # Fonts
 icomoon_css:
   contents:
@@ -249,6 +253,7 @@ app:
     - pagedown
     - autofill
     - sockjs
+    - unorm
     - uuid
     - app_css
     - app_js
