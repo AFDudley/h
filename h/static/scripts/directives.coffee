@@ -99,6 +99,7 @@ markdown = ['$filter', '$timeout', ($filter, $timeout) ->
     # Re-render when it becomes uneditable.
     scope.$watch 'readonly', (readonly) ->
       ctrl.$render()
+      MathJax.Hub.Queue(['Typeset',MathJax.Hub]) # Render any LaTex
       unless readonly then $timeout -> input.focus()
 
   require: '?ngModel'

@@ -248,9 +248,6 @@ annotation = ['$filter', '$parse', 'annotator', ($filter, $parse, annotator) ->
 
       scope.tags = ({text: tag} for tag in scope.model.tags or [])
 
-      # Tell MathJax to check for any LaTex that might need to be rerendered
-      MathJax.Hub.Queue(['Typeset',MathJax.Hub])
-
   controller: 'AnnotationController'
   require: '?ngModel'
   restrict: 'C'
