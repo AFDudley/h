@@ -1,6 +1,14 @@
-<div class="pull-right">
-<a class="" ng-hide="readonly" ng-click="insertLink()" href="">Insert Link</a>
-<a class="" ng-hide="readonly" ng-click="insertIMG()" href="">Insert Image</a>
+<div ng-hide="readonly" class="markdowntools">
+	<a class="icon-bold" ng-click="insertBold()" href="" title="Insert Bold" />
+	<a class="icon-italic" ng-click="insertItalic()" href="" title="Insert Italic" />
+	<a class="icon-quote" ng-click="insertQuote()" href="" title="Insert Quote" />
+	<a class="icon-link" ng-click="insertLink()" href="" title="Insert Link" />
+	<a class="icon-image" ng-click="insertIMG()" href="" title="Insert Image" />
+	<a class="icon-math" ng-click="insertMath()" href="" title="Insert Math" />
+	<a class="icon-numlist" ng-click="insertNumList()" href="" title="Insert Numbered List" />
+	<a class="icon-ulist" ng-click="insertList()" href="" title="Insert List" />
+	<a class="icon-code" ng-click="insertCode()" href="" title="Insert Code" />
+	<a class="icon-markdown" href="https://help.github.com/articles/markdown-basics" title="Parsed as Markdown" />
 </div>
 <textarea class="form-input form-textarea" ng-hide="readonly"
           ng-click="$event.stopPropagation()"

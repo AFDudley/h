@@ -62,8 +62,8 @@ markdown = ['$filter', '$timeout', ($filter, $timeout) ->
     input = elem.find('textarea')
     output = elem.find('div')
 
-    # Inserts a markdown link guide. 
-    scope.insertLink = ->
+    scope.returnSelection = ->
+      # Maybe get selections from other parts of the text? Such as the quote or a reply?
       # console.log window.getSelection().toString()
       if input[0].selectionStart != undefined
         startPos = input[0].selectionStart
@@ -71,18 +71,121 @@ markdown = ['$filter', '$timeout', ($filter, $timeout) ->
         selectedText = input[0].value.substring(startPos, endPos)
         textBefore = input[0].value.substring(0, (startPos))
         textAfter = input[0].value.substring(endPos)
-        newtext = textBefore + '[' + selectedText + '](https://example.com)' + textAfter
+        selection = {
+          before: textBefore
+          after: textAfter
+          selection: selectedText
+          start: startPos
+          end: endPos
+        }
+      input.focus()
+      return selection
+
+    scope.insertBold = (markup="**", innertext="Bold")->
+      text = scope.returnSelection()
+      if text.selection == ""
+        newtext = text.before + markup + innertext + markup + text.after
+        input[0].value = newtext
+        input[0].selectionStart = (text.before.length + markup.length)
+        input[0].selectionEnd = (text.before.length + innertext.length + markup.length)
+      else
+        newtext = text.before + markup + text.selection + markup + text.after
         input[0].value = newtext
 
-    scope.insertIMG = ->
-      # console.log window.getSelection().toString()
-      if input[0].selectionStart != undefined
-        startPos = input[0].selectionStart
-        endPos = input[0].selectionEnd
-        selectedText = input[0].value.substring(startPos, endPos)
-        console.log selectedText
-        newtext = input[0].value.substring(0, (startPos)) + '![' + selectedText + '](https://yourimage.jpg)' + input[0].value.substring(endPos)
+    scope.insertItalic = ->
+      # Shares the same logic as insertBold() but with different markup.
+      scope.insertBold("*", "Italic")
+
+    scope.insertMath = ->
+      # Shares the same logic as insertBold() but with different markup.
+      scope.insertBold("$$", "LaTex")
+
+    scope.insertLink = ->
+      text = scope.returnSelection()
+      if text.selection == ""
+        newtext = text.before + "[Link Text](https://example.com)" + text.after
         input[0].value = newtext
+        input[0].selectionStart = (text.before.length + 1)
+        input[0].selectionEnd = (text.before.length + 10)
+      else
+        newtext = text.before + '[' + text.selection + '](https://example.com)' + text.after
+        input[0].value = newtext
+        input[0].selectionStart = (text.before.length + text.selection.length + 3)
+        input[0].selectionEnd = (text.before.length + text.selection.length + 22)
+
+    scope.insertIMG = ->
+      text = scope.returnSelection()
+      if text.selection == ""
+        newtext = text.before + "![Image Description](https://yourimage.jpg)" + text.after
+        input[0].value = newtext
+        input[0].selectionStart = (text.before.length + 21)
+        input[0].selectionEnd = (text.before.length + 42)
+      else
+        newtext = text.before + '![' + text.selection + '](https://yourimage.jpg)' + text.after
+        input[0].value = newtext
+        input[0].selectionStart = (text.before.length + text.selection.length + 4)
+        input[0].selectionEnd = (text.before.length + text.selection.length + 25)
+
+    scope.insertList = (markup = "* ") ->
+      text = scope.returnSelection()
+      # If the character preceeding the curser is a newline just insert a "* ".
+      if text.selection != ""
+        newstring = ""
+        index = text.before.length
+        if index != 0
+          if input[0].value.substring(index - 1).charAt(0) == "\n"
+            # Look to see if the selection falls at the beginning of a new line.
+            newstring = newstring + markup
+          for char in text.selection
+            if char == "\n"
+              newstring = newstring + "\n" + markup
+            else
+              newstring = newstring + char
+            index += 1
+        else
+          for char in text.selection
+            if char == "\n"
+              newstring = newstring + "\n" + markup
+            else if index == 0
+              newstring = newstring + markup + char
+            else
+              newstring = newstring + char
+            index += 1
+        input[0].value = text.before + newstring + text.after
+        input[0].selectionStart = text.before.length + newstring.length
+        input[0].selectionEnd = text.before.length + newstring.length
+      else if input[0].value.substring((text.start - 1 ), text.start) == "\n"
+        input[0].value = text.before + markup + text.selection + text.after
+        input[0].selectionStart = text.before.length + markup.length
+        input[0].selectionEnd = text.before.length + markup.length
+      else
+        # If not a new line, go to the previous newline and insert a "* " there.
+        i = 0
+        for char in text.before
+          if char == "\n" and i != 0
+            index = i
+            console.log index
+          i += 1
+        if !index
+          # If the line of text happens to fall on the first line and index is not set.
+          newtext = markup + text.before.substring(0) + text.after
+        else
+          newtext = text.before.substring(0, (index)) + "\n" + markup + text.before.substring(index + 1) + text.after
+        input[0].value = newtext
+        input[0].selectionStart = text.before.length + markup.length
+        input[0].selectionEnd = text.before.length + markup.length
+
+    scope.insertNumList = ->
+      # Shares the same logic as insertList but with different markup.
+      scope.insertList("1. ")
+
+    scope.insertQuote = ->
+      # Shares the same logic as insertList but with different markup.
+      scope.insertList("> ")
+      
+    scope.insertCode = ->
+      # Shares the same logic as insertList but with different markup.
+      scope.insertList("    ")
 
     # Re-render the markdown when the view needs updating.
     ctrl.$render = ->
