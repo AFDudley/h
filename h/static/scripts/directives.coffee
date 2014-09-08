@@ -65,7 +65,6 @@ markdown = ['$filter', '$timeout', ($filter, $timeout) ->
     scope.returnSelection = ->
       # Maybe get selections from other parts of the text? Such as the quote or a reply?
       ourIframeSelection = window.getSelection().toString()
-      # Need to find a way so people don't accidentally copy in selections. 
       parentDocumentSelection = parent.window.getSelection().toString()
       if input[0].selectionStart != undefined
         startPos = input[0].selectionStart

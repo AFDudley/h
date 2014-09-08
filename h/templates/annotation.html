@@ -68,28 +68,7 @@
       <markdown class="form-field" ng-model="model.text" ng-readonly="true" name="text" />
     </div>
   </div>
-<!--   <div ng-show="editing">
-    <ul class="nav-tabs nobottomborder">
-      <li ng-class="!preview && 'active'">
-        <a href="" ng-click="preview = false">Write</a>
-      </li>
-      <li ng-class="preview && 'active'" ng-click="preparepreview()">
-        <a href="" ng-click="preview = true">Preview</a>
-      </li>
-    </ul>
-  </div> -->
 
-  <!-- Body -->
-<!--   <div class="body" ng-show="mode=='search' && !editing">
-    <markdown ng-model="model.highlightText" 
-              ng-readonly="!editing || preview"
-              name="text" />
-  </div>
-  <div class="body" ng-hide="mode=='search' && !editing">
-    <markdown ng-model="model.text"
-              ng-readonly="!editing || preview"
-              name="text" />
-  </div> -->
   <!-- Body -->
   <div ng-hide="editing" ng-switch="mode">
     <markdown class="form-field" name="text"

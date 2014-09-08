@@ -99,7 +99,10 @@
     padding: 5px;
 
     & + a {
-      margin-left: 13px;
+      margin-left: 12px;
+    }
+    &:hover {
+      color: black;
     }
   }
 }
