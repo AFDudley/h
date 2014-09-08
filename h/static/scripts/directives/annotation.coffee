@@ -154,9 +154,7 @@ class Annotation
         $scope.model.text = ''
         $scope.model.tags = ''
 
-    $scope.$watch 'editing', -> 
-      $scope.$emit 'toggleEditing'
-      MathJax.Hub.Queue(['Typeset', MathJax.Hub])
+    $scope.$watch 'editing', -> $scope.$emit 'toggleEditing'
 
     $scope.$watch 'model.id', (id) ->
       if id?
