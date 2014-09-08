@@ -64,11 +64,18 @@ markdown = ['$filter', '$timeout', ($filter, $timeout) ->
 
     scope.returnSelection = ->
       # Maybe get selections from other parts of the text? Such as the quote or a reply?
-      # console.log window.getSelection().toString()
+      ourIframeSelection = window.getSelection().toString()
+      # Need to find a way so people don't accidentally copy in selections. 
+      parentDocumentSelection = parent.window.getSelection().toString()
       if input[0].selectionStart != undefined
         startPos = input[0].selectionStart
         endPos = input[0].selectionEnd
-        selectedText = input[0].value.substring(startPos, endPos)
+        if ourIframeSelection
+          selectedText = ourIframeSelection
+        else if parentDocumentSelection
+          selectedText = parentDocumentSelection
+        else
+          selectedText = input[0].value.substring(startPos, endPos)
         textBefore = input[0].value.substring(0, (startPos))
         textAfter = input[0].value.substring(endPos)
         selection = {
@@ -187,8 +194,22 @@ markdown = ['$filter', '$timeout', ($filter, $timeout) ->
       # Shares the same logic as insertList but with different markup.
       scope.insertList("    ")
 
+    # Keyboard shortcuts for bold, italic, and link.
+    elem.bind
+      keydown: (e) ->
+        if e.keyCode == 66 && (e.ctrlKey || e.metaKey)
+          e.preventDefault()
+          scope.insertBold()
+        if e.keyCode == 73 && (e.ctrlKey || e.metaKey)
+          e.preventDefault()
+          scope.insertItalic()
+        if e.keyCode == 75 && (e.ctrlKey || e.metaKey)
+          e.preventDefault()
+          scope.insertLink()
+
     # Re-render the markdown when the view needs updating.
     ctrl.$render = ->
+      MathJax.Hub.Queue(['Typeset', MathJax.Hub])
       input.val (ctrl.$viewValue or '')
       scope.rendered = ($filter 'converter') (ctrl.$viewValue or '')
 
@@ -196,13 +217,13 @@ markdown = ['$filter', '$timeout', ($filter, $timeout) ->
     input.bind 'blur change keyup', ->
       ctrl.$setViewValue input.val()
       scope.$digest()
-      scope.$apply MathJax.Hub.Queue(['Typeset',MathJax.Hub])
+      # scope.$apply MathJax.Hub.Queue(['Typeset',MathJax.Hub])
 
     # Auto-focus the input box when the widget becomes editable.
     # Re-render when it becomes uneditable.
     scope.$watch 'readonly', (readonly) ->
       ctrl.$render()
-      MathJax.Hub.Queue(['Typeset',MathJax.Hub]) # Render any LaTex
+      # MathJax.Hub.Queue(['Typeset',MathJax.Hub]) # Render any LaTex
       unless readonly then $timeout -> input.focus()
 
   require: '?ngModel'
