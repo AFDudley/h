@@ -437,7 +437,10 @@ class ViewFilter
   constructor: (searchfilter, stringHelpers) ->
     @searchfilter = searchfilter
 
-    @_normalize = (e) -> stringHelpers.unidecode(e)
+    @_normalize = (e) ->
+      if typeof e is 'string'
+        return stringHelpers.unidecode(e)
+      else return e
 
   _matches: (filter, value, match) ->
     matches = true
@@ -483,12 +486,12 @@ class ViewFilter
     if angular.isArray value
       if filter.lowercase
         value = value.map (e) -> e.toLowerCase()
-      if filter.normalize
-        value = value.map (e) => @_normalize(e)
+
+      value = value.map (e) => @_normalize(e)
       return @_arrayMatches filter, value, checker.match
     else
       value = value.toLowerCase() if filter.lowercase
-      value = @_normalize(value) if filter.normalize
+      value = @_normalize(value)
       return @_matches filter, value, checker.match
 
   # Filters a set of annotations, according to a given query.
@@ -525,8 +528,7 @@ class ViewFilter
     for _, filter of filters
       if filter.lowercase
         filter.terms = filter.terms.map (e) -> e.toLowerCase()
-      if filter.normalize
-        filter.terms = filter.terms.map (e) => @_normalize(e)
+      filter.terms = filter.terms.map (e) => @_normalize(e)
 
     # Now that this filter is called with the top level annotations, we have to add the children too
     annotationsWithChildren = []
@@ -562,11 +564,10 @@ class ViewFilter
               if angular.isArray value
                 if filter.lowercase
                   value = value.map (e) -> e.toLowerCase()
-                if filter.normalize
-                  value = value.map (e) => @_normalize(e)
+                value = value.map (e) => @_normalize(e)
               else
                 value = value.toLowerCase() if filter.lowercase
-                value = @_normalize(value) if filter.normalize
+                value = @_normalize(value)
               matchresult = @_anyMatches filter, value, conf.match
               matchterms = matchterms.map (t, i) -> t or matchresult[i]
 

@@ -350,38 +350,21 @@ class FilterHandler(object):
                 else:
                     fval = field_value.lower()
 
-            if clause.get('normalize', False):
-                if type(cval) is list:
-                    tval = []
-                    for cv in cval:
-                        if isinstance(cv, str):
-                            cv = unicode(cv, "utf-8")
-                        if isinstance(cv, unicode):
-                            tval.append(unidecode(cv))
-                        else:
-                            tval.append(cv)
-                    cval = tval
-                else:
-                    if isinstance(cval, str):
-                        cval = unicode(cval, "utf-8")
-                    if isinstance(cval, unicode):
-                        cval = unidecode(cval)
+            if type(cval) is list:
+                tval = []
+                for cv in cval:
+                    tval.append(unidecode(cv))
+                cval = tval
+            else:
+                cval = unidecode(cval)
 
-                if type(fval) is list:
-                    tval = []
-                    for fv in fval:
-                        if isinstance(fv, str):
-                            fv = unicode(fv, "utf-8")
-                        if isinstance(fv, unicode):
-                            tval.append(unidecode(fv))
-                        else:
-                            tval.append(fv)
-                    fval = tval
-                else:
-                    if isinstance(fval, str):
-                        fval = unicode(fval, "utf-8")
-                    if isinstance(fval, unicode):
-                        fval = unidecode(fval)
+            if type(fval) is list:
+                tval = []
+                for fv in fval:
+                    tval.append(unidecode(fv))
+                fval = tval
+            else:
+                fval = unidecode(fval)
             # pylint: enable=maybe-no-member
 
             reversed_order = False
