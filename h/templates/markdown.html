@@ -1,16 +1,20 @@
-<div ng-hide="readonly" class="markdowntools">
-	<a class="icon-bold" ng-click="insertBold()" href="" title="Insert Bold" />
-	<a class="icon-italic" ng-click="insertItalic()" href="" title="Insert Italic" />
-	<a class="icon-quote" ng-click="insertQuote()" href="" title="Insert Quote" />
-	<a class="icon-link" ng-click="insertLink()" href="" title="Insert Link" />
-	<a class="icon-image" ng-click="insertIMG()" href="" title="Insert Image" />
-	<a class="icon-math" ng-click="insertMath()" href="" title="Insert Math" />
-	<a class="icon-numlist" ng-click="insertNumList()" href="" title="Insert Numbered List" />
-	<a class="icon-ulist" ng-click="insertList()" href="" title="Insert List" />
-	<a class="icon-code" ng-click="insertCode()" href="" title="Insert Code" />
-	<a class="icon-markdown" href="https://help.github.com/articles/markdown-basics" title="Parsed as Markdown" target="_blank" />
+<div ng-hide="readonly" class="markdowntools" ng-class="preview && 'disable'">
+	<i class="icon-bold" ng-click="insertBold()" title="Insert Bold" />
+	<i class="icon-italic" ng-click="insertItalic()" title="Insert Italic" />
+	<i class="icon-quote" ng-click="insertQuote()" title="Insert Quote" />
+	<i class="icon-link" ng-click="insertLink()" title="Insert Link" />
+	<i class="icon-image" ng-click="insertIMG()" title="Insert Image" />
+	<i class="icon-math" ng-click="insertMath()" title="Insert Math" />
+	<i class="icon-numlist" ng-click="insertNumList()" title="Insert Numbered List" />
+	<i class="icon-ulist" ng-click="insertList()" title="Insert List" />
+	<i class="icon-code" ng-click="insertCode()" title="Insert Code" />
+	<div class="preview-toggle">
+		<a class="icon-markdown" href="https://help.github.com/articles/markdown-basics" title="Parsed as Markdown" target="_blank" />
+		<a href="" ng-click="togglePreview()" ng-show="!preview">Preview</a>
+		<a href="" ng-click="togglePreview()" ng-show="preview">Write</a>
+	</div>
 </div>
-<textarea class="form-input form-textarea" ng-hide="readonly"
+<textarea class="form-input form-textarea" ng-hide="readonly || preview"
           ng-click="$event.stopPropagation()"
           ng-required="required" />
-<div class="styled-text" ng-bind-html="rendered" ng-show="readonly" />
+<div class="styled-text" ng-class="preview && 'preview'" ng-bind-html="rendered" ng-show="readonly || preview" />

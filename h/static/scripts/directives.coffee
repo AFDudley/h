@@ -206,6 +206,12 @@ markdown = ['$filter', '$timeout', ($filter, $timeout) ->
           e.preventDefault()
           scope.insertLink()
 
+    scope.preview = false
+    scope.togglePreview = ->
+      scope.preview = !scope.preview
+      if scope.preview
+        ctrl.$render()
+
     # Re-render the markdown when the view needs updating.
     ctrl.$render = ->
       input.val (ctrl.$viewValue or '')

@@ -16,7 +16,7 @@
 
     <!-- User -->
     <span ng-switch-default class="indicators">
-      <username data-user="model.user" ng-show="!editing"></username>
+      <username data-user="model.user"></username>
       <i class="small icon-locked"
          ng-show="form.privacy.$viewValue != 'Public' && !editing"></i>
       <i class="small icon-highlighter2"
@@ -56,28 +56,18 @@
     </ng-switch>
   </div>
 
-  <!-- Body Write / Preview Tabs -->
-  <div class="tabbable"
-       ng-model="preview"
-       ng-show="editing">
-    <div class="tab-pane" data-value="no" data-title="Write">
-      <markdown class="form-field" ng-model="model.text" name="text" />
-    </div>
-    <div class="tab-pane" data-value="yes" data-title="Preview">
-      <p class="form-field" ng-show="!model.text">Nothing to preview.</p>
-      <markdown class="form-field" ng-model="model.text" ng-readonly="true" name="text" />
-    </div>
-  </div>
-
   <!-- Body -->
-  <div ng-hide="editing" ng-switch="mode">
-    <markdown class="form-field" name="text"
-              ng-model="model.highlightText"
-              ng-switch-when="'search'" />
-    <markdown class="form-field" name="text"
-              ng-model="model.text"
-              ng-readonly="true"
-              ng-switch-default />
+  <div class="body" ng-show="mode=='search' && !editing">
+    <markdown ng-model="model.highlightText" 
+              ng-readonly="!editing"
+              name="text"
+              class="form-field" />
+  </div>
+  <div class="body" ng-hide="mode=='search' && !editing">
+    <markdown ng-model="model.text"
+              ng-readonly="!editing"
+              name="text" 
+              class="form-field" />
   </div>
 
   <!-- Tags -->
