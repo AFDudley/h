@@ -17,4 +17,4 @@
 <textarea class="form-input form-textarea" ng-hide="readonly || preview"
           ng-click="$event.stopPropagation()"
           ng-required="required" />
-<div class="styled-text" ng-class="preview && 'preview'" ng-bind-html="rendered" ng-show="readonly || preview" />
+<div class="styled-text" ng-class="preview && 'preview'" ng-click="togglePreview()" ng-bind-html="rendered" ng-show="readonly || preview" />
