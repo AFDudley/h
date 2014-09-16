@@ -59,6 +59,10 @@ markdown = ['$filter', '$timeout', ($filter, $timeout) ->
           input[0].value = newtext
           input[0].selectionStart = (text.before + markup).length
           input[0].selectionEnd = (text.before + text.selection + markup).length
+        newtext = text.before + markup + text.selection + markup + text.after
+        input[0].value = newtext
+        input[0].selectionStart = (text.before + markup).length
+        input[0].selectionEnd = (text.before + text.selection + markup).length
 
     scope.insertItalic = ->
       # Shares the same logic as insertBold() but with different markup.
@@ -160,7 +164,7 @@ markdown = ['$filter', '$timeout', ($filter, $timeout) ->
         input[0].selectionEnd = (text.before + markup).length
       else
         # No selection, cursor is not on new line. Go to the previous newline and insert markup there.
-        # # Check to see if markup has already been inserted.
+        # Check to see if markup has already been inserted.
         if text.before.slice(text.before.length - markup.length) == markup
           newtext = text.before.substring(0, (index)) + "\n" + text.before.substring(index + 1 + markup.length) + text.after
         i = 0
@@ -204,6 +208,25 @@ markdown = ['$filter', '$timeout', ($filter, $timeout) ->
       # Shares the same logic as insertList but with different markup.
       scope.insertList("    ")
 
+    scope.renderMath = (textToCheck) ->
+      # scope.mathOnPage = $rootScope.math
+      # regEx = /\$\$/
+      # searchResults = textToCheck.match regEx
+      # if searchResults != -1
+      #   # Only load KaTex if there is math on the page. 
+      #   # $rootScope.math = true
+      #   # if !scope.mathOnPage # Check to see if that we haven't loaded MathJax already.
+      #   #   $.ajax { 
+      #   #     url:"https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+      #   #     dataType: 'script'
+      #   #   }
+      #   # LaTex = textToCheck.substring
+      #   console.log searchResults
+      katex.renderToString(textToCheck, elem)
+
+    scope.renderLaTex = (LaTex) ->
+      katex.renderToString(LaTex)
+
     # Keyboard shortcuts for bold, italic, and link.
     elem.bind
       keydown: (e) ->
@@ -231,7 +254,8 @@ markdown = ['$filter', '$timeout', ($filter, $timeout) ->
     # Re-render the markdown when the view needs updating.
     ctrl.$render = ->
       input.val (ctrl.$viewValue or '')
-      scope.rendered = ($filter 'converter') (ctrl.$viewValue or '')
+      scope.rendered = ($filter 'converter') scope.renderMath((ctrl.$viewValue or ''))
+
 
     # React to the changes to the text area
     input.bind 'blur change keyup', ->
