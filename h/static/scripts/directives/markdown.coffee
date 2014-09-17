@@ -210,22 +210,28 @@ markdown = ['$filter', '$timeout', ($filter, $timeout) ->
 
     scope.renderMath = (textToCheck) ->
       # scope.mathOnPage = $rootScope.math
-      # regEx = /\$\$/
-      # searchResults = textToCheck.match regEx
-      # if searchResults != -1
-      #   # Only load KaTex if there is math on the page. 
-      #   # $rootScope.math = true
-      #   # if !scope.mathOnPage # Check to see if that we haven't loaded MathJax already.
-      #   #   $.ajax { 
-      #   #     url:"https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
-      #   #     dataType: 'script'
-      #   #   }
-      #   # LaTex = textToCheck.substring
-      #   console.log searchResults
-      katex.render(textToCheck, output[2])
-
-    scope.renderLaTex = (LaTex) ->
-      katex.renderToString(LaTex)
+      i = 0
+      startMath = null
+      endMath = null
+      for char in textToCheck
+        if char == "$" and textToCheck[i + 1] == "$"
+          if startMath == null
+            startMath = i + 2
+          else
+            endMath = i
+        i++
+      if startMath != null and endMath != null
+        # Only load KaTex if there is math on the page. 
+        # $rootScope.math = true
+        # if !scope.mathOnPage # Check to see if that we haven't loaded MathJax already.
+        #   $.ajax { 
+        #     url:"https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+        #     dataType: 'script'
+        #   }
+        # LaTex = textToCheck.substring
+        math = katex.renderToString(textToCheck.substring(startMath, endMath))
+      newstring = textToCheck.substring(0, (startMath - 2)) + math + textToCheck.substring((endMath + 2))
+      return newstring
 
     # Keyboard shortcuts for bold, italic, and link.
     elem.bind
@@ -254,8 +260,8 @@ markdown = ['$filter', '$timeout', ($filter, $timeout) ->
     # Re-render the markdown when the view needs updating.
     ctrl.$render = ->
       input.val (ctrl.$viewValue or '')
-      scope.rendered = ($filter 'converter') scope.renderMath((ctrl.$viewValue or ''))
-
+      scope.rendered = ($filter 'converter') (ctrl.$viewValue or '')
+      output[2].innerHTML = scope.renderMath(output[2].innerHTML)
 
     # React to the changes to the text area
     input.bind 'blur change keyup', ->
