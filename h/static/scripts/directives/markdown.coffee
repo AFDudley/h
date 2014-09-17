@@ -222,7 +222,7 @@ markdown = ['$filter', '$timeout', ($filter, $timeout) ->
       #   #   }
       #   # LaTex = textToCheck.substring
       #   console.log searchResults
-      katex.renderToString(textToCheck, elem)
+      katex.render(textToCheck, output[2])
 
     scope.renderLaTex = (LaTex) ->
       katex.renderToString(LaTex)
