@@ -221,16 +221,16 @@ markdown = ['$filter', '$timeout', ($filter, $timeout) ->
             endMath = i
         i++
       if startMath != null and endMath != null
-        # Only load KaTex if there is math on the page. 
-        # $rootScope.math = true
+        math = katex.renderToString(textToCheck.substring(startMath, endMath))
+        # If katex fails load mathjax
+        # scope.mathJax = true
         # if !scope.mathOnPage # Check to see if that we haven't loaded MathJax already.
         #   $.ajax { 
         #     url:"https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
         #     dataType: 'script'
         #   }
-        # LaTex = textToCheck.substring
-        math = katex.renderToString(textToCheck.substring(startMath, endMath))
-      newstring = textToCheck.substring(0, (startMath - 2)) + math + textToCheck.substring((endMath + 2))
+        newstring = textToCheck.substring(0, (startMath - 2)) + math + textToCheck.substring((endMath + 2))
+      else newstring = textToCheck
       return newstring
 
     # Keyboard shortcuts for bold, italic, and link.

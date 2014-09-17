@@ -42,11 +42,6 @@
 
 
 // Markdown Editor Controls ////////////////////////
-privacy {
-  position: relative;
-  top: 2px;
-}
-
 .markdown {
   .preview {
     overflow: auto;
@@ -96,6 +91,11 @@ privacy {
   }
 }
 
+// Pirvacy directive ////////////////////////
+privacy {
+  position: relative;
+  top: 2px;
+}
 
 //MAGICONTROL////////////////////////////////
 .magicontrol {
