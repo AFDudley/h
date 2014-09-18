@@ -7,7 +7,7 @@
 # the markdown editor.
 ###
 
-markdown = ['$filter', '$timeout', '$rootScope', ($filter, $timeout, $rootScope) ->
+markdown = ['$filter', '$sanitize', '$sce', '$timeout', ($filter, $sanitize, $sce, $timeout) ->
   link: (scope, elem, attr, ctrl) ->
     return unless ctrl?
 
@@ -208,7 +208,7 @@ markdown = ['$filter', '$timeout', '$rootScope', ($filter, $timeout, $rootScope)
       # Shares the same logic as insertList but with different markup.
       scope.insertList("    ")
 
-    renderMath = (textToCheck) ->
+    scope.renderMath = (textToCheck) ->
       # Parses text for math as denoted by '$$'
       i = 0
       startMath = null
@@ -224,17 +224,16 @@ markdown = ['$filter', '$timeout', '$rootScope', ($filter, $timeout, $rootScope)
           try
             math = katex.renderToString(textToCheck.substring(startMath, endMath))
           catch error
-             # If KaTex encounters an error load MathJax.
-            if !$rootScope.mathJax # Check to see if that we haven't loaded MathJax already.
-              $.ajax { 
-                url:"https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
-                dataType: 'script'
-              }
-              $rootScope.mathJax = true
+            # If KaTex encounters an error load MathJax?
+            #   $.ajax {
+            #     url:"https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+            #     dataType: 'script'
+            #   }
+            console.log error
           textToCheck = textToCheck.substring(0, (startMath - 2)) + math + textToCheck.substring((endMath + 2))
           startMath = null
           endMath = null
-          renderMath(textToCheck)
+          scope.renderMath(textToCheck)
       return textToCheck
 
     # Keyboard shortcuts for bold, italic, and link.
@@ -263,14 +262,12 @@ markdown = ['$filter', '$timeout', '$rootScope', ($filter, $timeout, $rootScope)
 
     # Re-render the markdown when the view needs updating.
     ctrl.$render = ->
+      # if !readonly or preview
       input.val (ctrl.$viewValue or '')
-      scope.rendered = ($filter 'converter') (ctrl.$viewValue or '')
-      # This is a hack, but otherwise ngSanitize gets rid of style atributes set by KaTex
-      # which make the math unreadable and destroy the layout. How to get around this?
-      output[2].innerHTML = renderMath(output[2].innerHTML)
-      if $rootScope.mathJax == true
-        # MathJax Fallback.
-        MathJax?.Hub.Queue(['Typeset', MathJax.Hub]) unless scope.readonly
+      value = ctrl.$viewValue or ''
+      markdown = $sanitize $filter('converter') value
+      rendered = scope.renderMath markdown
+      scope.rendered = $sce.trustAsHtml rendered
 
     # React to the changes to the text area
     input.bind 'blur change keyup', ->

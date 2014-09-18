@@ -58,7 +58,6 @@ class App
     storeReady = $q.defer()
 
     # Whether MathJax has been loaded.
-    $rootScope.mathJax = false
 
     applyUpdates = (action, data) ->
       """Update the application with new data from the websocket."""
