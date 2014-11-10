@@ -30,6 +30,9 @@ function isPDFViewerURL(url) {
   return url.indexOf(getPDFViewerURL('')) == 0
 }
 
+function isFileURL(url) {
+  return url.indexOf("file://") == 0
+}
 
 function inject(tab) {
   if (isPDFURL(tab.url)) {
@@ -41,10 +44,21 @@ function inject(tab) {
   } else {
     chrome.tabs.executeScript(tab.id, {
       file: 'public/embed.js'
-    }, function () {
-      chrome.tabs.executeScript(tab.id, {
-        code: 'window.annotator = true;'
-      })
+    }, function (result) {
+      if (result !== undefined) {
+        chrome.tabs.executeScript(tab.id, {
+          code: 'window.annotator = true;'
+	})
+      } else {
+        // Injection failed, so stop trying
+        state(tab.id, 'sleeping')
+        if (isFileURL(tab.url)) {
+          // Access denied. Show an explanation about permissions.
+          chrome.tabs.update(tab.id, {
+            url: CRX_BASE_URL + "help/permissions.html"
+          })
+        }
+      }
     })
   }
 }
