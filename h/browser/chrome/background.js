@@ -34,7 +34,37 @@ function isFileURL(url) {
   return url.indexOf("file://") == 0
 }
 
+function injectionFailed(tab) {
+  setBrowserAction(tab.id, state(tab.id, 'sleeping'))
+}
+
 function inject(tab) {
+  if (isFileURL(tab.url)) {
+    chrome.extension.isAllowedFileSchemeAccess(function (allowed) {
+      if (allowed) {
+        if (isPDFURL(tab.url)) {
+          // This a local PDF, and we have permission - good to go.
+          if (!isPDFViewerURL(tab.url)) {
+            chrome.tabs.update(tab.id, {
+              url: getPDFViewerURL(tab.url)
+            })
+          }
+        } else {
+          // This a local HTML. Even with permission, this won't work.
+          alert("Sorry, but as of now, this service can't be used on local HTMLs documents loaded via the file:/// protocol. (Local PDF documents are supported, though.)");
+          injectionFailed(tab)
+        }
+      } else {
+        // Access denied. Show an explanation about permissions.
+        injectionFailed(tab)
+        chrome.tabs.update(tab.id, {
+          url: CRX_BASE_URL + "help/permissions.html"
+        })
+      }
+    });
+    return;
+  }
+
   if (isPDFURL(tab.url)) {
       if (!isPDFViewerURL(tab.url)) {
         chrome.tabs.update(tab.id, {
@@ -52,12 +82,6 @@ function inject(tab) {
       } else {
         // Injection failed, so stop trying
         state(tab.id, 'sleeping')
-        if (isFileURL(tab.url)) {
-          // Access denied. Show an explanation about permissions.
-          chrome.tabs.update(tab.id, {
-            url: CRX_BASE_URL + "help/permissions.html"
-          })
-        }
       }
     })
   }
